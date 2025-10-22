@@ -1,0 +1,48 @@
+# Definición de servicios para la aplicación ERP
+services:
+  # Servicio de base de datos MySQL
+  mysql-db:
+    image: mysql:8.0
+    container_name: erp-mysql-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: unless-stopped # esto es para reiniciar el contenedor a menos que se detenga manualmente
+    healthcheck: # esto es para verificar que el contenedor este saludable
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+  
+  # Servicio de backend Spring Boot
+  backend-api:
+    build: # esto es para construir la imagen del backend desde el Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: erp-backend-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+    depends_on:
+      mysql-db:
+        condition: service_healthy # esto es para esperar a que la base de datos este saludable antes de iniciar el backend
+    restart: on-failure # esto es para reiniciar el contenedor solo en caso de fallo
+
+  # Servicio de frontend React
+  frontend-app:
+    build: ./frontend
+    container_name: erp-frontend-app
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-api
+    restart: on-failure
+
+# Volumenes para persistencia de datos
+volumes:
+  mysql-data:
+    driver: local
