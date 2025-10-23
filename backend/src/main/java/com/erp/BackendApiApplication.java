@@ -5,10 +5,10 @@ import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+
 
 @SpringBootApplication
-@RestController //Con esto se puede crear una API REST
+
 public class BackendApiApplication {
 
 	public static void main(String[] args) {
