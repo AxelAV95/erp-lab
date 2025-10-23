@@ -1,4 +1,4 @@
-package com.erp.domain;
+package com.erp.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
